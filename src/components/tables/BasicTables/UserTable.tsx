@@ -37,15 +37,16 @@ interface Order {
 export default function UserTableOne() {
   const navigate = useNavigate();
   const [tableData, setTableData] = useState<Order[]>([]);
+  const [filteredData, setFilteredData] = useState<Order[]>([]);
   const [page, setPage] = useState(1);
-  const [pageSize] = useState(10);
-  const [totalCount, setTotalCount] = useState(0);
+  const pageSize = 10;
+  const [totalCount, setTotalCount] = useState(0); // Total number of records (needed for pagination)
 
-  // New: Search and Filters
   const [searchTerm, setSearchTerm] = useState("");
   const [roleFilter, setRoleFilter] = useState("");
   const [statusFilter, setStatusFilter] = useState("");
 
+  // Fetch users with current filters and pagination
   const fetchUsers = async () => {
     const params: any = {
       page,
@@ -53,30 +54,61 @@ export default function UserTableOne() {
     };
 
     if (searchTerm) params.search = searchTerm;
-    if (roleFilter) params.role = roleFilter; // Send role as a string, not an integer
-    if (statusFilter) params.is_active = statusFilter === "true"; // Send boolean value for active/inactive
+    if (roleFilter) params.role = roleFilter;
 
     const res = await getUserListService(params);
 
     if (res && Array.isArray(res.results)) {
       setTableData(res.results);
-      setTotalCount(res.count || 0);
-    } else {
-      console.error("Failed to fetch user list.");
+      setTotalCount(res.count); // Update the total count for pagination
     }
   };
 
+  // Effect to fetch users when filters or page changes
   useEffect(() => {
     fetchUsers();
-  }, [page, searchTerm, roleFilter, statusFilter]);
+  }, [page, searchTerm, roleFilter]);
 
+  // Effect to apply status filtering when statusFilter changes
+  useEffect(() => {
+    let filtered = [...tableData];
+
+    // Apply the status filter
+    if (statusFilter === "true") {
+      filtered = filtered.filter((user) => user.is_active);
+    } else if (statusFilter === "false") {
+      filtered = filtered.filter((user) => !user.is_active);
+    }
+
+    // Update the filteredData
+    setFilteredData(filtered);
+
+    // Adjust the pagination if necessary
+    const totalFilteredPages = Math.ceil(filtered.length / pageSize);
+    if (page > totalFilteredPages && totalFilteredPages > 0) {
+      setPage(1); // Reset page to 1 if there are fewer filtered pages
+    }
+
+    // If status is "All", show all records, otherwise apply filter
+    if (statusFilter === "") {
+      setFilteredData(tableData); // Show all users when no status filter is applied
+    }
+
+  }, [statusFilter, tableData]);
+
+  // Calculate total pages for pagination
+  const totalPages = Math.ceil(totalCount / pageSize); // We use totalCount from API response to get the total number of pages
+
+  // Get paginated data based on current page
+  const paginatedData = filteredData.slice((page - 1) * pageSize, page * pageSize);
+
+  // Handler for showing user details
   const showDetails = (order: Order) => {
     navigate(`/user-details/${order.id}`, { state: { hideFields: true } });
-    return;
   };
 
+  // Handler for deleting a user
   const handleDelete = async (id: number) => {
-    // Show custom confirmation modal
     const result = await Swal.fire({
       title: "Are you sure?",
       text: "You will not be able to revert this!",
@@ -84,10 +116,9 @@ export default function UserTableOne() {
       showCancelButton: true,
       confirmButtonText: "Yes, delete it!",
       cancelButtonText: "No, cancel!",
-      reverseButtons: true, // Optional: Switch confirm and cancel button positions
+      reverseButtons: true,
     });
-  
-    // If user confirms (clicks 'Yes, delete it!')
+
     if (result.isConfirmed) {
       const auth = JSON.parse(localStorage.getItem("auth") || "{}");
       const accessToken = auth?.access;
@@ -102,63 +133,49 @@ export default function UserTableOne() {
             },
           }
         );
-  
-        // If the response status is 204 (no content), no need to parse JSON
+
         if (response.status === 204) {
-          // Update the table state by removing the deleted user from the tableData
-          setTableData((prevUsers: any) =>
-            prevUsers.filter((user: any) => user.id !== id)
+          setTableData((prevUsers) =>
+            prevUsers.filter((user) => user.id !== id)
           );
-          // Show success alert
           Swal.fire({
-                    icon: 'success',
-                    title: 'Deleted!',
-                    text: 'User has been deleted.',
-                    timer: 2000, // 2 seconds
-                    showConfirmButton: false, // OK button hatana
-                  });
+            icon: "success",
+            title: "Deleted!",
+            text: "User has been deleted.",
+            timer: 2000,
+            showConfirmButton: false,
+          });
         } else {
-          // Handle unexpected response status
           Swal.fire("Error", "There was a problem deleting the user.", "error");
         }
       } catch (e) {
-        console.log("Something went wrong in delete API", e);
+        console.log("Delete API error", e);
         Swal.fire("Error", "Something went wrong. Please try again.", "error");
       }
     }
   };
-  
-
-  const handleSearch = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setSearchTerm(e.target.value);
-    setPage(1); // reset to page 1 when searching
-  };
-
-  const handleRoleFilter = (e: React.ChangeEvent<HTMLSelectElement>) => {
-    setRoleFilter(e.target.value);
-    setPage(1);
-  };
-
-  const handleStatusFilter = (e: React.ChangeEvent<HTMLSelectElement>) => {
-    setStatusFilter(e.target.value);
-    setPage(1);
-  };
 
   return (
     <>
-      {/* Search and Filters */}
+      {/* Filters */}
       <div className="flex flex-wrap items-center gap-4 mb-4">
         <input
           type="text"
           value={searchTerm}
-          onChange={handleSearch}
+          onChange={(e) => {
+            setSearchTerm(e.target.value);
+            setPage(1); // Reset to page 1 when searching
+          }}
           placeholder="Search by name, phone, email, PAN, Aadhar"
           className="px-4 py-2 border rounded-md w-60"
         />
 
         <select
           value={roleFilter}
-          onChange={handleRoleFilter}
+          onChange={(e) => {
+            setRoleFilter(e.target.value);
+            setPage(1); // Reset to page 1 when filter changes
+          }}
           className="px-4 py-2 border rounded-md"
         >
           <option value="">All Roles</option>
@@ -171,7 +188,10 @@ export default function UserTableOne() {
 
         <select
           value={statusFilter}
-          onChange={handleStatusFilter}
+          onChange={(e) => {
+            setStatusFilter(e.target.value);
+            setPage(1); // Reset to page 1 when filter changes
+          }}
           className="px-4 py-2 border rounded-md"
         >
           <option value="">All Status</option>
@@ -187,34 +207,24 @@ export default function UserTableOne() {
             <Table>
               <TableHeader className="border-b border-gray-100 dark:border-white/[0.05]">
                 <TableRow>
-                  <TableCell isHeader className="px-5 py-3 font-medium text-gray-500 text-start text-theme-xs dark:text-gray-400">
-                    User name
-                  </TableCell>
-                  <TableCell isHeader className="px-5 py-3 font-medium text-gray-500 text-start text-theme-xs dark:text-gray-400">
-                    Phone Number
-                  </TableCell>
-                  <TableCell isHeader className="px-5 py-3 font-medium text-gray-500 text-start text-theme-xs dark:text-gray-400">
-                    Email
-                  </TableCell>
-                  <TableCell isHeader className="px-5 py-3 font-medium text-gray-500 text-start text-theme-xs dark:text-gray-400">
-                    Roles
-                  </TableCell>
-                  <TableCell isHeader className="px-5 py-3 font-medium text-gray-500 text-start text-theme-xs dark:text-gray-400">
-                    Status
-                  </TableCell>
-                  <TableCell isHeader className="px-5 py-3 font-medium text-gray-500 text-start text-theme-xs dark:text-gray-400">
-                    Assigned To
-                  </TableCell>
-                  <TableCell isHeader className="px-5 py-3 font-medium text-gray-500 text-start text-theme-xs dark:text-gray-400">
-                    Action
-                  </TableCell>
+                  {["#", "User name", "Phone Number", "Email", "Roles", "Status", "Assigned To", "Action"].map(
+                    (header) => (
+                      <TableCell
+                        key={header}
+                        isHeader
+                        className="px-5 py-3 font-medium text-gray-500 text-start text-theme-xs dark:text-gray-400"
+                      >
+                        {header}
+                      </TableCell>
+                    )
+                  )}
                 </TableRow>
               </TableHeader>
-
               <TableBody className="divide-y divide-gray-100 dark:divide-white/[0.05]">
-                {tableData.map((order) => (
+                {paginatedData.map((order, index) => (
                   <TableRow key={order.id}>
-                    <TableCell className="px-5 py-4 sm:px-6 text-start">
+                    <TableCell className="px-5 py-4 text-start">{index+1}</TableCell>
+                    <TableCell className="px-5 py-4 text-start">
                       <div className="flex items-center gap-3">
                         <div>
                           <span className="block font-medium text-gray-800 text-theme-sm dark:text-white/90">
@@ -226,21 +236,11 @@ export default function UserTableOne() {
                         </div>
                       </div>
                     </TableCell>
-                    <TableCell className="px-4 py-3 text-gray-500 text-start text-theme-sm dark:text-gray-400">
-                      {order.phone_number}
-                    </TableCell>
-                    <TableCell className="px-4 py-3 text-gray-500 text-start text-theme-sm dark:text-gray-400">
-                      {order.email || "-"}
-                    </TableCell>
-                    <TableCell className="px-4 py-3 text-gray-500 text-start text-theme-sm dark:text-gray-400">
-                      {order.roles?.join(", ")}
-                    </TableCell>
-                    <TableCell className="px-4 py-3 text-gray-500 text-start text-theme-sm dark:text-gray-400">
-                      {order.is_active ? "Active" : "Inactive"}
-                    </TableCell>
-                    <TableCell className="px-4 py-3 text-gray-500 text-start text-theme-sm dark:text-gray-400">
-                      {order.assigned_to || "-"}
-                    </TableCell>
+                    <TableCell className="px-5 py-4 text-start">{order.phone_number}</TableCell>
+                    <TableCell className="px-5 py-4 text-start">{order.email || "-"}</TableCell>
+                    <TableCell className="px-5 py-4 text-start">{order.roles?.join(", ")}</TableCell>
+                    <TableCell className="px-5 py-4 text-start">{order.is_active ? "Active" : "Inactive"}</TableCell>
+                    <TableCell className="px-5 py-4 text-start">{order.assigned_to || "-"}</TableCell>
                     <TableCell className="flex items-center gap-3 px-4 py-3">
                       <Eye
                         className="w-5 h-5 text-blue-600 hover:text-blue-800 cursor-pointer"
@@ -260,7 +260,7 @@ export default function UserTableOne() {
       </div>
 
       {/* Pagination */}
-      {totalCount > 10 && (
+      {totalPages > 1 && (
         <div className="flex justify-end mt-4">
           <button
             onClick={() => setPage((prev) => Math.max(prev - 1, 1))}
@@ -270,11 +270,11 @@ export default function UserTableOne() {
             Prev
           </button>
           <span className="px-4 py-2 text-sm">
-            Page {page} of {Math.ceil(totalCount / pageSize)}
+            Page {page} of {totalPages}
           </span>
           <button
-            onClick={() => setPage((prev) => prev + 1)}
-            disabled={page >= Math.ceil(totalCount / pageSize)}
+            onClick={() => setPage((prev) => Math.min(prev + 1, totalPages))}
+            disabled={page >= totalPages}
             className="px-4 py-2 mx-1 bg-gray-200 rounded hover:bg-gray-300 disabled:opacity-50"
           >
             Next

@@ -1,5 +1,4 @@
-import type React from "react";
-import { useState } from "react";
+import React, { useState, useRef, useEffect } from "react";
 
 interface Option {
   value: string;
@@ -21,29 +20,50 @@ const MultiSelect: React.FC<MultiSelectProps> = ({
   onChange,
   disabled = false,
 }) => {
-  const [selectedOptions, setSelectedOptions] =
-    useState<string[]>(defaultSelected);
+  const [selectedOptions, setSelectedOptions] = useState<string[]>(defaultSelected);
   const [isOpen, setIsOpen] = useState(false);
 
+  // Create a ref to the dropdown container
+  const dropdownRef = useRef<HTMLDivElement | null>(null);
+
+  // Close the dropdown if click happens outside
+  const handleClickOutside = (event: MouseEvent) => {
+    if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
+      setIsOpen(false); // Close dropdown if clicked outside
+    }
+  };
+
+  // Add event listener on mount and clean up on unmount
+  useEffect(() => {
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, []);
+
+  // Toggle dropdown visibility
   const toggleDropdown = () => {
     if (!disabled) setIsOpen((prev) => !prev);
   };
 
+  // Handle selecting and deselecting an option
   const handleSelect = (optionValue: string) => {
     const newSelectedOptions = selectedOptions.includes(optionValue)
       ? selectedOptions.filter((value) => value !== optionValue)
       : [...selectedOptions, optionValue];
 
     setSelectedOptions(newSelectedOptions);
-    onChange?.(newSelectedOptions);
+    onChange?.(newSelectedOptions); // Call the onChange callback if provided
   };
 
+  // Handle removing an option from the selected options
   const removeOption = (value: string) => {
     const newSelectedOptions = selectedOptions.filter((opt) => opt !== value);
     setSelectedOptions(newSelectedOptions);
     onChange?.(newSelectedOptions);
   };
 
+  // Get the text of selected values
   const selectedValuesText = selectedOptions.map(
     (value) => options.find((option) => option.value === value)?.text || ""
   );
@@ -54,8 +74,9 @@ const MultiSelect: React.FC<MultiSelectProps> = ({
         {label}
       </label>
 
-      <div className="relative z-20 inline-block w-full">
+      <div className="relative z-20 inline-block w-full" ref={dropdownRef}>
         <div className="relative flex flex-col items-center">
+          {/* Selected options display */}
           <div onClick={toggleDropdown} className="w-full">
             <div className="mb-2 flex h-11 rounded-lg border border-gray-300 py-1.5 pl-3 pr-3 shadow-theme-xs outline-none transition focus:border-brand-300 focus:shadow-focus-ring dark:border-gray-700 dark:bg-gray-900 dark:focus:border-brand-300">
               <div className="flex flex-wrap flex-auto gap-2">
@@ -69,8 +90,8 @@ const MultiSelect: React.FC<MultiSelectProps> = ({
                       <div className="flex flex-row-reverse flex-auto">
                         <div
                           onClick={(e) => {
-                            e.stopPropagation();
-                            removeOption(selectedOptions[index]);
+                            e.stopPropagation(); // Prevent the dropdown from closing
+                            removeOption(selectedOptions[index]);  // Remove the selected option
                           }}
                           className="pl-2 text-gray-500 cursor-pointer group-hover:text-gray-400 dark:text-gray-400"
                         >
@@ -101,6 +122,7 @@ const MultiSelect: React.FC<MultiSelectProps> = ({
                   />
                 )}
               </div>
+              {/* Dropdown toggle button */}
               <div className="flex items-center py-1 pl-1 pr-1 w-7">
                 <button
                   type="button"
@@ -128,17 +150,18 @@ const MultiSelect: React.FC<MultiSelectProps> = ({
             </div>
           </div>
 
+          {/* Dropdown list */}
           {isOpen && (
             <div
               className="absolute left-0 z-40 w-full overflow-y-auto bg-white rounded-lg shadow top-full max-h-select dark:bg-gray-900"
-              onClick={(e) => e.stopPropagation()}
+              onClick={(e) => e.stopPropagation()}  // Prevent click propagation
             >
               <div className="flex flex-col">
                 {options.map((option, index) => (
                   <div
                     key={index}
                     className={`hover:bg-primary/5 w-full cursor-pointer rounded-t border-b border-gray-200 dark:border-gray-800`}
-                    onClick={() => handleSelect(option.value)}
+                    onClick={() => handleSelect(option.value)}  // Select option when clicked
                   >
                     <div
                       className={`relative flex w-full items-center p-2 pl-2 ${
