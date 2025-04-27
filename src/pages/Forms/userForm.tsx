@@ -28,18 +28,17 @@ export const UserForm = ({
 
   // Compute disabled logic once
   const isDisabled = !!id && !editMode;
-    // Local state for switches
-    const [isActive, setIsActive] = useState(user.is_active);
- 
-      // Error state for validation
+  // Local state for switches
+  const [isActive, setIsActive] = useState(user.is_active);
+
+  // Error state for validation
   const [errors, setErrors] = useState<any>({});
 
-    useEffect(() => {
-      setIsActive(user.is_active);
-    }, [user]);
+  useEffect(() => {
+    setIsActive(user.is_active);
+  }, [user]);
 
-
-    // Validation function
+  // Validation function
   const validateForm = () => {
     const newErrors: any = {};
 
@@ -54,11 +53,11 @@ export const UserForm = ({
       newErrors.email = "Enter a valid email address.";
     }
 
-      // Phone number validation: must contain 9 to 15 digits
-  const phoneRegex = /^[0-9]{9,15}$/;
-  if (user.phone_number && !phoneRegex.test(user.phone_number)) {
-    newErrors.phone_number = "Phone number must contain 9-15 digits.";
-  }
+    // Phone number validation: must contain 9 to 15 digits
+    const phoneRegex = /^[0-9]{9,15}$/;
+    if (user.phone_number && !phoneRegex.test(user.phone_number)) {
+      newErrors.phone_number = "Phone number must contain 9-15 digits.";
+    }
 
     setErrors(newErrors);
 
@@ -76,168 +75,197 @@ export const UserForm = ({
 
   return (
     <div>
-<form
-  onSubmit={(e) => {
-    e.preventDefault();
-    if (validateForm() && submitForm) {
-      submitForm();
-    }
-  }}
-  encType="multipart/form-data"
->
-<ComponentCard title="Personal Details">
-      <div className="grid grid-cols-1 gap-6 xl:grid-cols-2">
-        
-          <div className="space-y-6">
-          <Label htmlFor="First Name">
+      <form
+        onSubmit={(e) => {
+          e.preventDefault();
+          if (validateForm() && submitForm) {
+            submitForm();
+          }
+        }}
+        encType="multipart/form-data"
+      >
+        <ComponentCard title="Personal Details">
+          <div className="grid grid-cols-1 gap-6 xl:grid-cols-2">
+            <div className="space-y-6">
+              <Label htmlFor="First Name">
                 First Name <span className="text-red-500">*</span>
               </Label>
-            <Input
-              value={user.first_name}
-              type="text"
-              id="firstName"
-              onChange={(e) =>
-                setUser((prev: any) => ({
-                  ...prev,
-                  first_name: e.target.value,
-                }))
-              }
-              disabled={isDisabled}
-            />
-            {errors.first_name && (
+              <Input
+                value={user.first_name}
+                type="text"
+                id="firstName"
+                onChange={(e) =>
+                  setUser((prev: any) => ({
+                    ...prev,
+                    first_name: e.target.value,
+                  }))
+                }
+                disabled={isDisabled}
+              />
+              {errors.first_name && (
                 <p className="text-red-500 text-sm" id="first_name">
                   {errors.first_name}
                 </p>
               )}
+            </div>
+
+            <div className="space-y-6">
+              <Label htmlFor="Last Name">Last Name</Label>
+              <Input
+                value={user.last_name}
+                type="text"
+                id="lastName"
+                onChange={(e) =>
+                  setUser((prev: any) => ({
+                    ...prev,
+                    last_name: e.target.value,
+                  }))
+                }
+                disabled={isDisabled}
+              />
+            </div>
           </div>
-      
 
-        <div className="space-y-6">
-          <Label htmlFor="Last Name">Last Name</Label>
-          <Input
-            value={user.last_name}
-            type="text"
-            id="lastName"
-            onChange={(e) =>
-              setUser((prev: any) => ({
-                ...prev,
-                last_name: e.target.value,
-              }))
-            }
-            disabled={isDisabled}
-          />
-        </div>
-      </div>
-
-      <div className="grid grid-cols-1 gap-6 xl:grid-cols-2">
-        <div className="space-y-6">
-        <Label htmlFor="Email">
+          <div className="grid grid-cols-1 gap-6 xl:grid-cols-2">
+            <div className="space-y-6">
+              <Label htmlFor="Email">
                 Email <span className="text-red-500">*</span>
               </Label>
-          <Input
-            value={user.email}
-            type="text"
-            id="email"
-            onChange={(e) =>
-              setUser((prev: any) => ({ ...prev, email: e.target.value }))
-            }
-            disabled={isDisabled}
-          />
-          {errors.email && (
+              <Input
+                value={user.email}
+                type="text"
+                id="email"
+                onChange={(e) =>
+                  setUser((prev: any) => ({ ...prev, email: e.target.value }))
+                }
+                disabled={isDisabled}
+              />
+              {errors.email && (
                 <p className="text-red-500 text-sm" id="email">
                   {errors.email}
                 </p>
               )}
-        </div>
+            </div>
 
-        <div className="space-y-6">
-          <Label htmlFor="Phone Number"> Phone Number <span className="text-red-500">*</span></Label>
-          <Input
-            value={user.phone_number}
-            type="text"
-            id="phoneNumber"
-            onChange={(e) =>
-              setUser((prev: any) => ({
-                ...prev,
-                phone_number: e.target.value,
-              }))
-            }
-            disabled={isDisabled}
-          />
-           {errors.phone_number && (
+            <div className="space-y-6">
+              <Label htmlFor="Phone Number">
+                {" "}
+                Phone Number <span className="text-red-500">*</span>
+              </Label>
+              <Input
+                value={user.phone_number}
+                type="text"
+                id="phoneNumber"
+                onChange={(e) =>
+                  setUser((prev: any) => ({
+                    ...prev,
+                    phone_number: e.target.value,
+                  }))
+                }
+                disabled={isDisabled}
+              />
+              {errors.phone_number && (
                 <p className="text-red-500 text-sm" id="phone_number">
                   {errors.phone_number}
                 </p>
               )}
-        </div>
+            </div>
 
-        <div className="space-y-6">
-          <Label htmlFor="Date of Birth">Date of Birth</Label>
-          <Input
-            value={user.date_of_birth}
-            type="date"
-            id="dateOfBirth"
-            onChange={(e) =>
-              setUser((prev: any) => ({
-                ...prev,
-                date_of_birth: e.target.value,
-              }))
-            }
-            disabled={isDisabled}
-          />
-        </div>
-        {!hideFields && (
-        <div className="space-y-6">
-          <Label htmlFor="Profile Picture">Profile Picture</Label>
-          <Input
-            type="file"
-            id="profilePicture"
-            onChange={(e) =>
-              setUser((prev: any) => ({
-                ...prev,
-                profile_picture: e.target.files?.[0],
-              }))
-            }
-            disabled={isDisabled}
-          />
-        </div>
-         )}
-      </div>
-      {!hideFields && (
-      <div className="space-y-6">
-        <Label htmlFor="Bio">Bio</Label>
-        <Input
-          value={user.bio}
-          type="text"
-          id="bio"
-          onChange={(e) =>
-            setUser((prev: any) => ({
-              ...prev,
-              bio: e.target.value,
-            }))
-          }
-          disabled={isDisabled}
-        />
-      </div>
-      )}
-    {!hideFields && (
-      <div className="space-y-6">
-        <Label htmlFor="Country">Country</Label>
-        <Input
-          value={user.country}
-          type="text"
-          id="country"
-          onChange={(e) =>
-            setUser((prev: any) => ({
-              ...prev,
-              country: e.target.value,
-            }))
-          }
-          disabled={isDisabled}
-        />
-      </div>
-    )}
-    </ComponentCard>
+            <div className="space-y-6">
+              <Label htmlFor="Date of Birth">Date of Birth</Label>
+              <Input
+                value={user.date_of_birth}
+                type="date"
+                id="dateOfBirth"
+                onChange={(e) =>
+                  setUser((prev: any) => ({
+                    ...prev,
+                    date_of_birth: e.target.value,
+                  }))
+                }
+                disabled={isDisabled}
+              />
+            </div>
+            {!hideFields && (
+              <div className="space-y-6">
+                <Label htmlFor="Profile Picture">Profile Picture</Label>
+                <Input
+                  type="file"
+                  id="profilePicture"
+                  onChange={(e) =>
+                    setUser((prev: any) => ({
+                      ...prev,
+                      profile_picture: e.target.files?.[0],
+                    }))
+                  }
+                  disabled={isDisabled}
+                />
+              </div>
+            )}
+          </div>
+          {!hideFields && (
+            <div className="space-y-6">
+              <Label htmlFor="Bio">Bio</Label>
+              <Input
+                value={user.bio}
+                type="text"
+                id="bio"
+                onChange={(e) =>
+                  setUser((prev: any) => ({
+                    ...prev,
+                    bio: e.target.value,
+                  }))
+                }
+                disabled={isDisabled}
+              />
+            </div>
+          )}
+          {!hideFields && (
+            <div className="space-y-6">
+              <Label htmlFor="Country">Country</Label>
+              <select
+                id="country"
+                value={user.country}
+                onChange={(e) =>
+                  setUser((prev: any) => ({
+                    ...prev,
+                    country: e.target.value,
+                  }))
+                }
+                disabled={isDisabled}
+                className="border p-2 w-full rounded"
+              >
+                <option value="">Select Country</option>
+                <option value="india">india</option>
+                <option value="united states">united states</option>
+                <option value="united kingdom">united kingdom</option>
+                <option value="canada">canada</option>
+                <option value="australia">australia</option>
+                <option value="germany">germany</option>
+                <option value="france">france</option>
+                <option value="italy">italy</option>
+                <option value="spain">spain</option>
+                <option value="japan">japan</option>
+                <option value="china">china</option>
+                <option value="russia">russia</option>
+                <option value="brazil">brazil</option>
+                <option value="mexico">mexico</option>
+                <option value="singapore">singapore</option>
+                <option value="malaysia">malaysia</option>
+                <option value="indonesia">indonesia</option>
+                <option value="thailand">thailand</option>
+                <option value="vietnam">vietnam</option>
+                <option value="philippines">philippines</option>
+                <option value="south korea">south korea</option>
+                <option value="new zealand">new zealand</option>
+                <option value="united arab emirates">
+                  united arab emirates
+                </option>
+                <option value="saudi arabia">saudi arabia</option>
+              </select>
+            </div>
+          )}
+        </ComponentCard>
 
         <ComponentCard title="Roles and Responsibilities">
           <div className="grid grid-cols-1 gap-6 xl:grid-cols-2">
@@ -293,46 +321,46 @@ export const UserForm = ({
             </div>
           </div>
           {!hideFields && (
-          <div className="grid grid-cols-1 gap-6 xl:grid-cols-2">
-            <div className="space-y-6">
-              <Label htmlFor="Creator Email">Creator Email</Label>
-              <Input
-                value={user?.created_by?.email}
-                type="text"
-                id="creatorEmail"
-                disabled={isDisabled}
-              />
+            <div className="grid grid-cols-1 gap-6 xl:grid-cols-2">
+              <div className="space-y-6">
+                <Label htmlFor="Creator Email">Creator Email</Label>
+                <Input
+                  value={user?.created_by?.email}
+                  type="text"
+                  id="creatorEmail"
+                  disabled={isDisabled}
+                />
+              </div>
             </div>
-          </div>
-           )}
+          )}
         </ComponentCard>
 
         <ComponentCard title="Additional Details">
-  {[
-    { label: "PAN Card Number", field: "pan_card" },
-    { label: "Password", field: "password" },
-    { label: "Name as per PAN Card", field: "name_as_per_pan_card" },
-    { label: "Aadhar Card Number", field: "aadhar_card" },
-]
-    .filter(({ field }) => !(hideFields && field === "password"))
-    .map(({ label, field }) => (
-      <div className="space-y-6" key={field}>
-        <Label htmlFor={field}>{label}</Label>
-        <Input
-          value={user[field]}
-          type="text"
-          id={field}
-          onChange={(e) =>
-            setUser((prev: any) => ({
-              ...prev,
-              [field]: e.target.value,
-            }))
-          }
-          disabled={isDisabled}
-        />
-      </div>
-    ))}
-</ComponentCard>
+          {[
+            { label: "PAN Card Number", field: "pan_card" },
+            { label: "Password", field: "password" },
+            { label: "Name as per PAN Card", field: "name_as_per_pan_card" },
+            { label: "Aadhar Card Number", field: "aadhar_card" },
+          ]
+            .filter(({ field }) => !(hideFields && field === "password"))
+            .map(({ label, field }) => (
+              <div className="space-y-6" key={field}>
+                <Label htmlFor={field}>{label}</Label>
+                <Input
+                  value={user[field]}
+                  type="text"
+                  id={field}
+                  onChange={(e) =>
+                    setUser((prev: any) => ({
+                      ...prev,
+                      [field]: e.target.value,
+                    }))
+                  }
+                  disabled={isDisabled}
+                />
+              </div>
+            ))}
+        </ComponentCard>
 
         <ComponentCard title="GST Details">
           {[
