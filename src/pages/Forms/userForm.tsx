@@ -186,7 +186,7 @@ export const UserForm = ({
                 disabled={isDisabled}
               />
             </div>
-            {!hideFields && (
+            {/* {!hideFields && (
               <div className="space-y-6">
                 <Label htmlFor="Profile Picture">Profile Picture</Label>
                 <Input
@@ -201,9 +201,9 @@ export const UserForm = ({
                   disabled={isDisabled}
                 />
               </div>
-            )}
+            )} */}
           </div>
-          {!hideFields && (
+          {/* {!hideFields && (
             <div className="space-y-6">
               <Label htmlFor="Bio">Bio</Label>
               <Input
@@ -219,8 +219,8 @@ export const UserForm = ({
                 disabled={isDisabled}
               />
             </div>
-          )}
-          {!hideFields && (
+          )} */}
+          {/* {!hideFields && (
             <div className="space-y-6">
               <Label htmlFor="Country">Country</Label>
               <select
@@ -264,7 +264,7 @@ export const UserForm = ({
                 <option value="saudi arabia">saudi arabia</option>
               </select>
             </div>
-          )}
+          )} */}
         </ComponentCard>
 
         <ComponentCard title="Roles and Responsibilities">
@@ -299,46 +299,10 @@ export const UserForm = ({
           </div>
         </ComponentCard>
 
-        <ComponentCard title="Created By">
-          <div className="grid grid-cols-1 gap-6 xl:grid-cols-2">
-            <div className="space-y-6">
-              <Label htmlFor="Creator First Name">Creator First Name</Label>
-              <Input
-                value={user.created_by?.first_name}
-                type="text"
-                disabled={isDisabled}
-                id="creatorFirstName"
-              />
-            </div>
-            <div className="space-y-6">
-              <Label htmlFor="Creator Last Name">Creator Last Name</Label>
-              <Input
-                value={user.created_by?.last_name}
-                type="text"
-                id="creatorLastName"
-                disabled={isDisabled}
-              />
-            </div>
-          </div>
-          {!hideFields && (
-            <div className="grid grid-cols-1 gap-6 xl:grid-cols-2">
-              <div className="space-y-6">
-                <Label htmlFor="Creator Email">Creator Email</Label>
-                <Input
-                  value={user?.created_by?.email}
-                  type="text"
-                  id="creatorEmail"
-                  disabled={isDisabled}
-                />
-              </div>
-            </div>
-          )}
-        </ComponentCard>
-
         <ComponentCard title="Additional Details">
           {[
             { label: "PAN Card Number", field: "pan_card" },
-            { label: "Password", field: "password" },
+            // { label: "Password", field: "password" },
             { label: "Name as per PAN Card", field: "name_as_per_pan_card" },
             { label: "Aadhar Card Number", field: "aadhar_card" },
           ]
@@ -384,6 +348,42 @@ export const UserForm = ({
               />
             </div>
           ))}
+        </ComponentCard>
+
+        <ComponentCard title="Created By">
+          <div className="grid grid-cols-1 gap-6 xl:grid-cols-2">
+            <div className="space-y-6">
+              <Label htmlFor="Creator First Name">Creator First Name</Label>
+              <Input
+                value={user.created_by?.first_name}
+                type="text"
+                disabled={isDisabled}
+                id="creatorFirstName"
+              />
+            </div>
+            <div className="space-y-6">
+              <Label htmlFor="Creator Last Name">Creator Last Name</Label>
+              <Input
+                value={user.created_by?.last_name}
+                type="text"
+                id="creatorLastName"
+                disabled={isDisabled}
+              />
+            </div>
+          </div>
+          {/* {!hideFields && (
+            <div className="grid grid-cols-1 gap-6 xl:grid-cols-2">
+              <div className="space-y-6">
+                <Label htmlFor="Creator Email">Creator Email</Label>
+                <Input
+                  value={user?.created_by?.email}
+                  type="text"
+                  id="creatorEmail"
+                  disabled={isDisabled}
+                />
+              </div>
+            </div>
+          )} */}
         </ComponentCard>
 
         {/* Buttons */}

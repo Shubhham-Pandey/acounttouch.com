@@ -43,31 +43,66 @@ const UserDetails: FC = () => {
       assigned_to: assignedTo,
     };
   
-    const res = await updateUserService(payload, id);
+  //   const res = await updateUserService(payload, id);
   
-    // Check if response is successful and has the 'id' field
-    if (res && res.id) {
-      // If update is successful, show success message from API
-      Swal.fire({
-        icon: 'success',
-        title: 'Success!',
-        text: `User updated successfully!`, // Show success message here
-        timer: 2000, // 2 seconds
-        showConfirmButton: false, // OK button hatana
-      });
-      navigate("/user-tables");
-    } else {
-      // If API returns an error or fails to update, show error message
-      Swal.fire({
-        icon: 'error',
-        title: 'Update Failed!',
-        text: res?.detail || "Something went wrong while updating the user!",
-        timer: 2000, // 2 seconds
-        showConfirmButton: false, // OK button hatana // Display the error message from API if available
-      });
-      navigate("/user-tables");
-    }
-  };
+  //   // Check if response is successful and has the 'id' field
+  //   if (res && res.id) {
+  //     // If update is successful, show success message from API
+  //     Swal.fire({
+  //       icon: 'success',
+  //       title: 'Success!',
+  //       text: `User updated successfully!`, // Show success message here
+  //       timer: 2000, // 2 seconds
+  //       showConfirmButton: false, // OK button hatana
+  //     });
+  //     navigate("/user-tables");
+  //   } else {
+  //     // If API returns an error or fails to update, show error message
+  //     Swal.fire({
+  //       icon: 'error',
+  //       title: 'Update Failed!',
+  //       text: res?.detail || "Something went wrong while updating the user!",
+  //       timer: 2000, // 2 seconds
+  //       showConfirmButton: false, // OK button hatana // Display the error message from API if available
+  //     });
+  //     navigate("/user-tables");
+  //   }
+  // };
+  const res = await updateUserService(payload, id);
+
+if (res && res.id) {
+  Swal.fire({
+    icon: 'success',
+    title: 'Success!',
+    text: 'User updated successfully!',
+    timer: 2000,
+    showConfirmButton: false,
+  });
+  navigate("/user-tables");
+} else {
+  // Validation error handle here
+  if (res && typeof res === "object") {
+    const errorMessages = Object.values(res)
+      .flat()
+      .join("\n"); // join all errors with new line
+    Swal.fire({
+      icon: 'error',
+      title: 'Update Failed!',
+      text: errorMessages || "Something went wrong while updating the user!",
+      timer: 3000,
+      showConfirmButton: false,
+    });
+  } else {
+    Swal.fire({
+      icon: 'error',
+      title: 'Update Failed!',
+      text: "Something went wrong while updating the user!",
+      timer: 3000,
+      showConfirmButton: false,
+    });
+  }
+}
+}
   
 
 

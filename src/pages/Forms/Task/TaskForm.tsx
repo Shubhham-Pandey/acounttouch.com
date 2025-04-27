@@ -28,7 +28,22 @@ interface TaskFormProps {
   editMode?: boolean;
 }
 
+const formatDateForInput = (dateString: string) => {
+  // Ensure dateString is in ISO 8601 format
+  const date = new Date(dateString);
+  const year = date.getFullYear();
+  const month = String(date.getMonth() + 1).padStart(2, "0");
+  const day = String(date.getDate()).padStart(2, "0");
+  const hours = String(date.getHours()).padStart(2, "0");
+  const minutes = String(date.getMinutes()).padStart(2, "0");
+
+  return `${year}-${month}-${day}T${hours}:${minutes}`;
+};
+
 const TaskForm = ({ task, setTask, onSubmit, setPriorityTo, editMode = false }: TaskFormProps) => {
+  console.log(task.due_date,'task1');
+  console.log(task.completed_at,'task1');
+  console.log(task.started_at,'task3');
   return (
     <form
       onSubmit={(e) => {
@@ -104,16 +119,6 @@ const TaskForm = ({ task, setTask, onSubmit, setPriorityTo, editMode = false }: 
           </div>
 
           <div className="space-y-6">
-            <Label htmlFor="priority">Priority</Label>
-            {/* <Input
-              value={task.priority}
-              type="text"
-              id="priority"
-              onChange={(e) =>
-                setTask((prev: any) => ({ ...prev, priority: e.target.value }))
-              }
-              required
-            /> */}
             <MultiSelect
                 label="Priority"
                 options={priorityToOptions}
@@ -164,7 +169,7 @@ const TaskForm = ({ task, setTask, onSubmit, setPriorityTo, editMode = false }: 
           <div className="space-y-6">
             <Label htmlFor="due_date">Due Date</Label>
             <Input
-              value={task.due_date}
+              value={formatDateForInput(task.due_date)}  // Format the date before passing it to the input
               type="datetime-local"
               id="due_date"
               onChange={(e) =>
@@ -174,10 +179,11 @@ const TaskForm = ({ task, setTask, onSubmit, setPriorityTo, editMode = false }: 
             />
           </div>
 
+          {/* Started At Field */}
           <div className="space-y-6">
             <Label htmlFor="started_at">Started At</Label>
             <Input
-              value={task.started_at}
+              value={formatDateForInput(task.started_at)}  // Format the date before passing it to the input
               type="datetime-local"
               id="started_at"
               onChange={(e) =>
@@ -187,10 +193,11 @@ const TaskForm = ({ task, setTask, onSubmit, setPriorityTo, editMode = false }: 
             />
           </div>
 
+          {/* Completed At Field */}
           <div className="space-y-6">
             <Label htmlFor="completed_at">Completed At</Label>
             <Input
-              value={task.completed_at}
+              value={formatDateForInput(task.completed_at)}  // Format the date before passing it to the input
               type="datetime-local"
               id="completed_at"
               onChange={(e) =>

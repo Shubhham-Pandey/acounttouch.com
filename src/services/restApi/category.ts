@@ -3,6 +3,34 @@ import { getAccessToken } from "./user";// ----------------------
 // ✅ CATEGORY SERVICES
 // ----------------------
 
+// export const getCategoryListService = async (params: {
+//   page?: number;
+//   search?: string;
+//   ordering?: string;
+// }) => {
+//   try {
+//     const token = getAccessToken();
+
+//     const queryParams = new URLSearchParams();
+
+//     if (params.page) queryParams.append("page", params.page.toString()); // ← convert number to string
+//     if (params.search) queryParams.append("search", params.search);
+//     if (params.ordering) queryParams.append("ordering", params.ordering);
+
+//     const res = await fetch(`https://api.accountouch.com/api/tasks/categories/?${queryParams.toString()}`, {
+//       method: "GET",
+//       headers: {
+//         Authorization: `Bearer ${token}`,
+//       },
+//     });
+
+//     return await res.json();
+//   } catch (e) {
+//     console.error("Error in getCategoryListService:", e);
+//     return null;
+//   }
+// };
+
 export const getCategoryListService = async (params: {
   page?: number;
   search?: string;
@@ -13,9 +41,14 @@ export const getCategoryListService = async (params: {
 
     const queryParams = new URLSearchParams();
 
-    if (params.page) queryParams.append("page", params.page.toString()); // ← convert number to string
+    if (params.page) queryParams.append("page", params.page.toString());
     if (params.search) queryParams.append("search", params.search);
-    if (params.ordering) queryParams.append("ordering", params.ordering);
+    // ✅ If no custom ordering, set default to latest created
+    if (params.ordering) {
+      queryParams.append("ordering", params.ordering);
+    } else {
+      queryParams.append("ordering", "-created_at"); // 👈 Default: latest created first
+    }
 
     const res = await fetch(`https://api.accountouch.com/api/tasks/categories/?${queryParams.toString()}`, {
       method: "GET",
@@ -24,12 +57,19 @@ export const getCategoryListService = async (params: {
       },
     });
 
-    return await res.json();
+    if (!res.ok) {
+      console.error(`Error fetching category list: ${res.status} ${res.statusText}`);
+      return null;
+    }
+
+    const data = await res.json();
+    return data;
   } catch (e) {
     console.error("Error in getCategoryListService:", e);
     return null;
   }
 };
+
 
 
 export const getCategoryDetailsService = async (id: string) => {

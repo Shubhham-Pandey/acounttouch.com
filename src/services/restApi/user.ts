@@ -51,7 +51,6 @@ export const addUserService = async (payload: UserPayload) => {
         formData.append(key, value);
       }
     });
-console.log(payload,'payload');
 
     const response = await fetch(`https://api.accountouch.com/api/users/users/`, {
       method: "POST",

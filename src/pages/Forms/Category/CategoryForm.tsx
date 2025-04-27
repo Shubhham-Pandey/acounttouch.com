@@ -8,7 +8,7 @@ interface CategoryFormProps {
     name: string;
     description?: string;
     image?: File | null;
-    imageUrl?: string; // ✅ for preview
+    imageUrl?: string;
   };
   setCategory: React.Dispatch<React.SetStateAction<any>>;
   onSubmit: () => void;
@@ -17,34 +17,53 @@ interface CategoryFormProps {
 
 const CategoryForm = ({ category, setCategory, onSubmit, editMode = false }: CategoryFormProps) => {
   const [preview, setPreview] = useState<string | null>(null);
+  const [errors, setErrors] = useState<{ name?: string; description?: string; image?: string }>({});
 
   useEffect(() => {
-    // If image is selected by user, create a preview
     if (category.image) {
       const filePreview = URL.createObjectURL(category.image);
       setPreview(filePreview);
-
-      // Clean up URL.createObjectURL when component unmounts or image changes
       return () => URL.revokeObjectURL(filePreview);
     } else if (category.imageUrl) {
-      // If editing and image URL exists
       setPreview(category.imageUrl);
     } else {
       setPreview(null);
     }
   }, [category.image, category.imageUrl]);
 
+  const validate = () => {
+    const newErrors: { name?: string; description?: string; image?: string } = {};
+
+    if (!category.name.trim()) {
+      newErrors.name = "Name is required.";
+    }
+    if (!category.description?.trim()) {
+      newErrors.description = "Description is required.";
+    }
+    if (!category.image && !editMode) {
+      newErrors.image = "Image is required.";
+    }
+
+    setErrors(newErrors);
+    return Object.keys(newErrors).length === 0;
+  };
+
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (validate()) {
+      onSubmit();
+    }
+  };
+
   return (
-    <form
-      onSubmit={(e) => {
-        e.preventDefault();
-        onSubmit();
-      }}
-    >
+    <form onSubmit={handleSubmit}>
       <ComponentCard title={editMode ? "Edit Category" : "Add New Category"}>
         <div className="grid grid-cols-1 gap-6 xl:grid-cols-2">
-          <div className="space-y-6">
-            <Label htmlFor="name">Name</Label>
+          {/* Name Field */}
+          <div className="space-y-2">
+            <Label htmlFor="name">
+              Name <span className="text-red-500">*</span>
+            </Label>
             <Input
               value={category.name}
               type="text"
@@ -54,10 +73,14 @@ const CategoryForm = ({ category, setCategory, onSubmit, editMode = false }: Cat
               }
               required
             />
+            {errors.name && <p className="text-red-500 text-sm">{errors.name}</p>}
           </div>
 
-          <div className="space-y-6">
-            <Label htmlFor="description">Description</Label>
+          {/* Description Field */}
+          <div className="space-y-2">
+            <Label htmlFor="description">
+              Description <span className="text-red-500">*</span>
+            </Label>
             <Input
               value={category.description}
               type="text"
@@ -65,13 +88,17 @@ const CategoryForm = ({ category, setCategory, onSubmit, editMode = false }: Cat
               onChange={(e) =>
                 setCategory((prev: any) => ({ ...prev, description: e.target.value }))
               }
+              required
             />
+            {errors.description && <p className="text-red-500 text-sm">{errors.description}</p>}
           </div>
 
-          <div className="space-y-6 col-span-2">
-            <Label htmlFor="image">Image</Label>
+          {/* Image Upload */}
+          <div className="space-y-2 col-span-2">
+            <Label htmlFor="image">
+              Image <span className="text-red-500">*</span>
+            </Label>
 
-            {/* ✅ Image preview */}
             {preview && (
               <img
                 src={preview}
@@ -92,9 +119,11 @@ const CategoryForm = ({ category, setCategory, onSubmit, editMode = false }: Cat
                 }));
               }}
             />
+            {errors.image && <p className="text-red-500 text-sm">{errors.image}</p>}
           </div>
         </div>
 
+        {/* Submit Button */}
         <div className="mt-6">
           <button
             type="submit"

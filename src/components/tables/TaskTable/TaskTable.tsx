@@ -17,19 +17,10 @@ import {
 interface Task {
   id: number;
   title: string;
-  description: string;
-  category_id: number;
-  template_id: number;
   status: string;
   priority: string;
   client_id: number;
-  maker_id: number;
-  checker_id: number;
-  due_date: string;
-  started_at: string;
-  completed_at: string;
-  maker_notes: string;
-  checker_notes: string;
+  created_at: string;
 }
 
 type PriorityType = "low" | "medium" | "high" | "urgent";
@@ -131,6 +122,7 @@ export default function TasksTable() {
           <option value="pending">Pending</option>
           <option value="started">Started</option>
           <option value="completed">Completed</option>
+          <option value="draft">Draft</option>
         </select>
       </div>
 
@@ -141,56 +133,41 @@ export default function TasksTable() {
             <Table>
               <TableHeader className="border-b border-gray-100 dark:border-white/[0.05]">
                 <TableRow>
+                  <TableCell isHeader>ID</TableCell>
                   <TableCell isHeader>Title</TableCell>
-                  <TableCell isHeader>Description</TableCell>
-                  <TableCell isHeader>Category ID</TableCell>
-                  <TableCell isHeader>Template ID</TableCell>
                   <TableCell isHeader>Status</TableCell>
                   <TableCell isHeader>Priority</TableCell>
                   <TableCell isHeader>Client ID</TableCell>
-                  <TableCell isHeader>Maker ID</TableCell>
-                  <TableCell isHeader>Checker ID</TableCell>
-                  <TableCell isHeader>Due Date</TableCell>
-                  <TableCell isHeader>Started At</TableCell>
-                  <TableCell isHeader>Completed At</TableCell>
-                  <TableCell isHeader>Maker Notes</TableCell>
-                  <TableCell isHeader>Checker Notes</TableCell>
+                  <TableCell isHeader>Created At</TableCell>
                   <TableCell isHeader>Actions</TableCell>
                 </TableRow>
               </TableHeader>
-              <TableBody className="divide-y divide-gray-100 dark:divide-white/[0.05]">
-                {tasks.map((task) => (
-                  <TableRow key={task.id}>
-                    <TableCell>{task.title}</TableCell>
-                    <TableCell>{task.description || "-"}</TableCell>
-                    <TableCell>{task.category_id}</TableCell>
-                    <TableCell>{task.template_id}</TableCell>
-                    <TableCell>{task.status}</TableCell>
-                    <TableCell>{task.priority}</TableCell>
-                    <TableCell>{task.client_id}</TableCell>
-                    <TableCell>{task.maker_id}</TableCell>
-                    <TableCell>{task.checker_id}</TableCell>
-                    <TableCell>{new Date(task.due_date).toLocaleDateString()}</TableCell>
-                    <TableCell>{new Date(task.started_at).toLocaleString()}</TableCell>
-                    <TableCell>{new Date(task.completed_at).toLocaleString()}</TableCell>
-                    <TableCell>{task.maker_notes}</TableCell>
-                    <TableCell>{task.checker_notes}</TableCell>
-                    <TableCell>
-                      <div className="flex items-center space-x-4 text-lg text-gray-600 dark:text-white/70">
-                        <button onClick={() => navigate(`/tasks/view/${task.id}`)} title="View">
-                          <FiEye className="hover:text-blue-500" />
-                        </button>
-                        <button onClick={() => navigate(`/manage-task/${task.id}`)} title="Edit">
-                          <FiEdit className="hover:text-green-500" />
-                        </button>
-                        <button onClick={() => setDeleteId(task.id)} title="Delete">
-                          <FiTrash2 className="hover:text-red-500" />
-                        </button>
-                      </div>
-                    </TableCell>
-                  </TableRow>
-                ))}
-              </TableBody>
+              <TableBody className="text-center divide-y divide-gray-100 dark:divide-white/[0.05]">
+  {tasks.map((task) => (
+    <TableRow key={task.id}>
+      <TableCell className="text-center">{task.id}</TableCell>
+      <TableCell className="text-center">{task.title}</TableCell>
+      <TableCell className="text-center">{task.status}</TableCell>
+      <TableCell className="text-center">{task.priority}</TableCell>
+      <TableCell className="text-center">{task.client_id}</TableCell>
+      <TableCell className="text-center">{new Date(task.created_at).toLocaleDateString()}</TableCell>
+      <TableCell className="flex justify-center items-center">
+        <div className="space-x-4 text-lg text-gray-600 dark:text-white/70">
+          <button onClick={() => navigate(`/tasks/view/${task.id}`)} title="View">
+            <FiEye className="hover:text-blue-500" />
+          </button>
+          <button onClick={() => navigate(`/manage-task/${task.id}`)} title="Edit">
+            <FiEdit className="hover:text-green-500" />
+          </button>
+          <button onClick={() => setDeleteId(task.id)} title="Delete">
+            <FiTrash2 className="hover:text-red-500" />
+          </button>
+        </div>
+      </TableCell>
+    </TableRow>
+  ))}
+</TableBody>
+
             </Table>
           </div>
         </div>

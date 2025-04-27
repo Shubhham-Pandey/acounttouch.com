@@ -28,6 +28,7 @@ import AddOrEditCategoryPage from "./pages/Forms/Category/AddOrEditCategoryPage"
 import ViewCategoryPage from "./pages/Forms/Category/ViewCategoryPage";
 import TaskTable from "./pages/Tables/TaskTables";
 import AddOrEditTaskPage from "./pages/Forms/Task/AddOrEditTaskPage";
+import ViewTaskPage from "./pages/Forms/Task/ViewTaskPage";
 
 export default function App() {
   return (
@@ -53,7 +54,7 @@ export default function App() {
               element={
                 <ProtectedRoutesLayout>
                   <UserProfiles />
-                  </ProtectedRoutesLayout>
+                </ProtectedRoutesLayout>
               }
             />
             <Route
@@ -117,7 +118,7 @@ export default function App() {
                 </ProtectedRoutesLayout>
               }
             />
-            
+
             <Route
               path="/category-list"
               element={
@@ -153,41 +154,41 @@ export default function App() {
               }
             />
 
-<Route
-  path="/task-list"
-  element={
-    <ProtectedRoutesLayout>
-      <TaskTable />
-    </ProtectedRoutesLayout>
-  }
-/>
+            <Route
+              path="/task-list"
+              element={
+                <ProtectedRoutesLayout>
+                  <TaskTable />
+                </ProtectedRoutesLayout>
+              }
+            />
 
- <Route
-  path="/manage-task"
-  element={
-    <ProtectedRoutesLayout>
-      <AddOrEditTaskPage />
-    </ProtectedRoutesLayout>
-  }
-/>
+            <Route
+              path="/manage-task"
+              element={
+                <ProtectedRoutesLayout>
+                  <AddOrEditTaskPage />
+                </ProtectedRoutesLayout>
+              }
+            />
 
-{/* <Route
-  path="/manage-task/:id"
-  element={
-    <ProtectedRoutesLayout>
-      <AddOrEditTaskPage />
-    </ProtectedRoutesLayout>
-  }
-/>
+            <Route
+              path="/manage-task/:id"
+              element={
+                <ProtectedRoutesLayout>
+                  <AddOrEditTaskPage />
+                </ProtectedRoutesLayout>
+              }
+            />
 
-<Route
-  path="/tasks/view/:id"
-  element={
-    <ProtectedRoutesLayout>
-      <ViewTaskPage />
-    </ProtectedRoutesLayout>
-  }
-/> */}
+            <Route
+              path="/tasks/view/:id"
+              element={
+                <ProtectedRoutesLayout>
+                  <ViewTaskPage />
+                </ProtectedRoutesLayout>
+              }
+            />
 
             {/* Ui Elements */}
             <Route path="/alerts" element={<Alerts />} />

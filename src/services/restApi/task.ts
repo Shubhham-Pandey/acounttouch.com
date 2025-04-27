@@ -124,7 +124,7 @@ export const deleteTaskService = async (taskId: number) => {
     try {
       const token = getAccessToken();
   
-      const res = await fetch(`https://api.accountouch.com/api/tasks/task/${taskId}`, {
+      const res = await fetch(`https://api.accountouch.com/api/tasks/tasks/${taskId}`, {
         method: "DELETE",
         headers: {
           Authorization: `Bearer ${token}`,

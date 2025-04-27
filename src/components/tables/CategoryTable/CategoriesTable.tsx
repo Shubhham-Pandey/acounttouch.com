@@ -78,18 +78,6 @@ export default function CategoriesTable() {
             setPage(1);
           }}
         />
-        {/* <select
-          className="px-3 py-2 border rounded"
-          value={ordering}
-          onChange={(e) => {
-            setOrdering(e.target.value);
-            setPage(1);
-          }}
-        >
-          <option value="">Order By</option>
-          <option value="name">Name ↑</option>
-          <option value="-name">Name ↓</option>
-        </select> */}
       </div>
 
       {/* Table */}
@@ -99,15 +87,17 @@ export default function CategoriesTable() {
             <Table>
               <TableHeader className="border-b border-gray-100 dark:border-white/[0.05]">
                 <TableRow>
+                <TableCell isHeader>ID</TableCell>
                   <TableCell isHeader>Name</TableCell>
                   <TableCell isHeader>Description</TableCell>
                   <TableCell isHeader>Image</TableCell>
                   <TableCell isHeader>Actions</TableCell>
                 </TableRow>
               </TableHeader>
-              <TableBody className="divide-y divide-gray-100 dark:divide-white/[0.05]">
+              <TableBody className="divide-y divide-gray-100 dark:divide-white/[0.05] text-align-center">
                 {categories.map((cat) => (
-                  <TableRow key={cat.id}>
+                  <TableRow key={cat.id} className="text-center">
+                    <TableCell>{cat.id}</TableCell>
                     <TableCell>{cat.name}</TableCell>
                     <TableCell>{cat.description || "-"}</TableCell>
                     <TableCell>
