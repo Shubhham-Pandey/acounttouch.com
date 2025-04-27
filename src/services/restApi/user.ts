@@ -123,10 +123,7 @@ export const userDetailsService = async (userId: string) => {
 
 export const updateUserService = async (payload: UserPayload, userId: string) => {
   try {
-    // return await CreateRequest({
-    //   url: USER_DETAILS_ENDPOINT(userId),
-    //   method: "GET",
-    // });
+
     const auth = JSON.parse(localStorage.getItem("auth") || "{}");
     
     const accessToken = auth?.access;

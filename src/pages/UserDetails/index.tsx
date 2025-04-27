@@ -1,11 +1,12 @@
 import React, { FC, useEffect, useState } from "react";
-import { Navigate, useParams,useLocation  } from "react-router";
+import { Navigate, useParams,useLocation, useNavigate  } from "react-router";
 import { updateUserService, userDetailsService } from "../../services/restApi/user";
 import { UserForm } from "../Forms/userForm";
 import Swal from "sweetalert2";
 // import toast from "react-hot-toast";
 
 const UserDetails: FC = () => {
+  const navigate = useNavigate();
   const { id } = useParams<{ id: string }>();
   const location = useLocation();
   const hideFields = location.state?.hideFields || false;
@@ -41,21 +42,33 @@ const UserDetails: FC = () => {
       roles: selectedRoles,
       assigned_to: assignedTo,
     };
-    const res = await updateUserService(payload,id);
+  
+    const res = await updateUserService(payload, id);
+  
+    // Check if response is successful and has the 'id' field
     if (res && res.id) {
-        Swal.fire({
-              icon: 'error',
-              title: 'Login!',
-              text: "User update successfully!",
-            });
+      // If update is successful, show success message from API
+      Swal.fire({
+        icon: 'success',
+        title: 'Success!',
+        text: `User updated successfully!`, // Show success message here
+        timer: 2000, // 2 seconds
+        showConfirmButton: false, // OK button hatana
+      });
+      navigate("/user-tables");
     } else {
+      // If API returns an error or fails to update, show error message
       Swal.fire({
         icon: 'error',
-        title: 'Login!',
-        text: "Something went wrong while adding the user!",
+        title: 'Update Failed!',
+        text: res?.detail || "Something went wrong while updating the user!",
+        timer: 2000, // 2 seconds
+        showConfirmButton: false, // OK button hatana // Display the error message from API if available
       });
+      navigate("/user-tables");
     }
   };
+  
 
 
   useEffect(() => {

@@ -1,7 +1,6 @@
 import { useCallback, useEffect, useRef, useState } from "react";
-import { Link, useLocation } from "react-router";
+import { Link, useLocation } from "react-router-dom";
 
-// Assume these icons are imported from an icon library
 import {
   BoxCubeIcon,
   CalenderIcon,
@@ -27,75 +26,23 @@ type NavItem = {
 
 const navItems: NavItem[] = [
   {
-    icon: <GridIcon />,
-    name: "Dashboard",
-    subItems: [{ name: "Ecommerce", path: "/", pro: false }],
-  },
-  {
-    icon: <CalenderIcon />,
-    name: "Calendar",
-    path: "/calendar",
-  },
-  {
     icon: <UserCircleIcon />,
     name: "User Profile",
     path: "/profile",
   },
   {
-    name: "Forms",
-    icon: <ListIcon />,
-    subItems: [{ name: "Form Elements", path: "/form-elements", pro: false }],
-  },
-  {
     name: "Tables",
     icon: <TableIcon />,
     subItems: [
-      { name: "Users", path: "/user-tables", pro: false }, 
-      { name: "Categories", path: "/category-list", pro: false }, 
-      // { name: "Basic Tables", path: "/basic-tables", pro: false },
-      { name: "Task Tables", path: "/task-list", pro: false }
-    ],
-  },
-  {
-    name: "Pages",
-    icon: <PageIcon />,
-    subItems: [
-      { name: "Blank Page", path: "/blank", pro: false },
-      { name: "404 Error", path: "/error-404", pro: false },
+      { name: "Users", path: "/user-tables", pro: false },
+      { name: "Categories", path: "/category-list", pro: false },
+      { name: "Task Tables", path: "/task-list", pro: false },
     ],
   },
 ];
 
-const othersItems: NavItem[] = [
-  {
-    icon: <PieChartIcon />,
-    name: "Charts",
-    subItems: [
-      { name: "Line Chart", path: "/line-chart", pro: false },
-      { name: "Bar Chart", path: "/bar-chart", pro: false },
-    ],
-  },
-  {
-    icon: <BoxCubeIcon />,
-    name: "UI Elements",
-    subItems: [
-      { name: "Alerts", path: "/alerts", pro: false },
-      { name: "Avatar", path: "/avatars", pro: false },
-      { name: "Badge", path: "/badge", pro: false },
-      { name: "Buttons", path: "/buttons", pro: false },
-      { name: "Images", path: "/images", pro: false },
-      { name: "Videos", path: "/videos", pro: false },
-    ],
-  },
-  {
-    icon: <PlugInIcon />,
-    name: "Authentication",
-    subItems: [
-      { name: "Sign In", path: "/signin", pro: false },
-      { name: "Sign Up", path: "/signup", pro: false },
-    ],
-  },
-];
+// Commented out Others completely ✅
+// const othersItems: NavItem[] = [];
 
 const AppSidebar: React.FC = () => {
   const { isExpanded, isMobileOpen, isHovered, setIsHovered } = useSidebar();
@@ -105,12 +52,9 @@ const AppSidebar: React.FC = () => {
     type: "main" | "others";
     index: number;
   } | null>(null);
-  const [subMenuHeight, setSubMenuHeight] = useState<Record<string, number>>(
-    {}
-  );
+  const [subMenuHeight, setSubMenuHeight] = useState<Record<string, number>>({});
   const subMenuRefs = useRef<Record<string, HTMLDivElement | null>>({});
 
-  // const isActive = (path: string) => location.pathname === path;
   const isActive = useCallback(
     (path: string) => location.pathname === path,
     [location.pathname]
@@ -118,8 +62,8 @@ const AppSidebar: React.FC = () => {
 
   useEffect(() => {
     let submenuMatched = false;
-    ["main", "others"].forEach((menuType) => {
-      const items = menuType === "main" ? navItems : othersItems;
+    ["main" /*, "others"*/].forEach((menuType) => {
+      const items = menuType === "main" ? navItems : []; // removed othersItems
       items.forEach((nav, index) => {
         if (nav.subItems) {
           nav.subItems.forEach((subItem) => {
@@ -183,7 +127,7 @@ const AppSidebar: React.FC = () => {
               }`}
             >
               <span
-                className={`menu-item-icon-size  ${
+                className={`menu-item-icon-size ${
                   openSubmenu?.type === menuType && openSubmenu?.index === index
                     ? "menu-item-icon-active"
                     : "menu-item-icon-inactive"
@@ -236,7 +180,8 @@ const AppSidebar: React.FC = () => {
               className="overflow-hidden transition-all duration-300"
               style={{
                 height:
-                  openSubmenu?.type === menuType && openSubmenu?.index === index
+                  openSubmenu?.type === menuType &&
+                  openSubmenu?.index === index
                     ? `${subMenuHeight[`${menuType}-${index}`]}px`
                     : "0px",
               }}
@@ -331,25 +276,11 @@ const AppSidebar: React.FC = () => {
               </h2>
               {renderMenuItems(navItems, "main")}
             </div>
-            <div className="">
-              <h2
-                className={`mb-4 text-xs uppercase flex leading-[20px] text-gray-400 ${
-                  !isExpanded && !isHovered
-                    ? "lg:justify-center"
-                    : "justify-start"
-                }`}
-              >
-                {isExpanded || isHovered || isMobileOpen ? (
-                  "Others"
-                ) : (
-                  <HorizontaLDots />
-                )}
-              </h2>
-              {renderMenuItems(othersItems, "others")}
-            </div>
+
+            {/* Removed "Others" Section ✅ */}
           </div>
         </nav>
-        {isExpanded || isHovered || isMobileOpen ? <SidebarWidget /> : null}
+        {(isExpanded || isHovered || isMobileOpen) && <SidebarWidget />}
       </div>
     </aside>
   );

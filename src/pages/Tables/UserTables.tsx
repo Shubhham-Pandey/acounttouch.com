@@ -13,7 +13,7 @@ export default function UserTables() {
       <PageBreadcrumb pageTitle="User Table" />
       <div className="space-y-6">
         <ComponentCard
-          title="User Table 1"
+          title="User List"
           addUnit="Add User"
           route="/add-user"
         >

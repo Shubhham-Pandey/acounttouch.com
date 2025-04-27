@@ -31,155 +31,67 @@ export const UserForm = ({
     // Local state for switches
     const [isActive, setIsActive] = useState(user.is_active);
  
+      // Error state for validation
+  const [errors, setErrors] = useState<any>({});
+
     useEffect(() => {
       setIsActive(user.is_active);
     }, [user]);
 
+
+    // Validation function
+  const validateForm = () => {
+    const newErrors: any = {};
+
+    // Validate required fields
+    if (!user.first_name) newErrors.first_name = "First Name is required";
+    if (!user.email) newErrors.email = "Email is required";
+    if (!user.phone_number) newErrors.phone_number = "Phone Number is required";
+
+    // Email format validation
+    const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
+    if (user.email && !emailRegex.test(user.email)) {
+      newErrors.email = "Enter a valid email address.";
+    }
+
+      // Phone number validation: must contain 9 to 15 digits
+  const phoneRegex = /^[0-9]{9,15}$/;
+  if (user.phone_number && !phoneRegex.test(user.phone_number)) {
+    newErrors.phone_number = "Phone number must contain 9-15 digits.";
+  }
+
+    setErrors(newErrors);
+
+    // Scroll to first error
+    if (Object.keys(newErrors).length > 0) {
+      const firstError = Object.keys(newErrors)[0];
+      const element = document.getElementById(firstError);
+      if (element) {
+        element.scrollIntoView({ behavior: "smooth", block: "center" });
+      }
+    }
+
+    return Object.keys(newErrors).length === 0; // Return true if no errors
+  };
 
   return (
     <div>
 <form
   onSubmit={(e) => {
     e.preventDefault();
-    if (submitForm) {
+    if (validateForm() && submitForm) {
       submitForm();
     }
   }}
   encType="multipart/form-data"
 >
-        {/* <ComponentCard title="Personal Details">
-          <div className="grid grid-cols-1 gap-6 xl:grid-cols-2">
-            {hideFields && (
-            <div className="space-y-6">
-              <Label htmlFor="First Name">First Name</Label>
-              <Input
-                value={user.first_name}
-                type="text"
-                id="firstName"
-                onChange={(e) =>
-                  setUser((prev: any) => ({
-                    ...prev,
-                    first_name: e.target.value,
-                  }))
-                }
-                disabled={isDisabled}
-              />
-            </div>
-            )}
-            <div className="space-y-6">
-              <Label htmlFor="Last Name">Last Name</Label>
-              <Input
-                value={user.last_name}
-                type="text"
-                id="lastName"
-                onChange={(e) =>
-                  setUser((prev: any) => ({
-                    ...prev,
-                    last_name: e.target.value,
-                  }))
-                }
-                disabled={isDisabled}
-              />
-            </div>
-          </div>
-
-          <div className="grid grid-cols-1 gap-6 xl:grid-cols-2">
-            <div className="space-y-6">
-              <Label htmlFor="Email">Email</Label>
-              <Input
-                value={user.email}
-                type="text"
-                id="email"
-                onChange={(e) =>
-                  setUser((prev: any) => ({ ...prev, email: e.target.value }))
-                }
-                disabled={isDisabled}
-              />
-            </div>
-            <div className="space-y-6">
-              <Label htmlFor="Phone Number">Phone Number</Label>
-              <Input
-                value={user.phone_number}
-                type="text"
-                id="phoneNumber"
-                onChange={(e) =>
-                  setUser((prev: any) => ({
-                    ...prev,
-                    phone_number: e.target.value,
-                  }))
-                }
-                disabled={isDisabled}
-              />
-            </div>
-            <div className="space-y-6">
-              <Label htmlFor="Date of Birth">Date of Birth</Label>
-              <Input
-                value={user.date_of_birth}
-                type="date"
-                id="dateOfBirth"
-                onChange={(e) =>
-                  setUser((prev: any) => ({
-                    ...prev,
-                    date_of_birth: e.target.value,
-                  }))
-                }
-                disabled={isDisabled}
-              />
-            </div>
-            <div className="space-y-6">
-              <Label htmlFor="Profile Picture">Profile Picture</Label>
-              <Input
-                type="file"
-                id="profilePicture"
-                onChange={(e) =>
-                  setUser((prev: any) => ({
-                    ...prev,
-                    profile_picture: e.target.files?.[0],
-                  }))
-                }
-                disabled={isDisabled}
-              />
-            </div>
-          </div>
-
-          <div className="space-y-6">
-            <Label htmlFor="Bio">Bio</Label>
-            <Input
-              value={user.bio}
-              type="text"
-              id="bio"
-              onChange={(e) =>
-                setUser((prev: any) => ({
-                  ...prev,
-                  bio: e.target.value,
-                }))
-              }
-              disabled={isDisabled}
-            />
-          </div>
-
-          <div className="space-y-6">
-            <Label htmlFor="Country">Country</Label>
-            <Input
-              value={user.country}
-              type="text"
-              id="country"
-              onChange={(e) =>
-                setUser((prev: any) => ({
-                  ...prev,
-                  country: e.target.value,
-                }))
-              }
-              disabled={isDisabled}
-            />
-          </div>
-        </ComponentCard> */}
-
 <ComponentCard title="Personal Details">
       <div className="grid grid-cols-1 gap-6 xl:grid-cols-2">
         
           <div className="space-y-6">
-            <Label htmlFor="First Name">First Name</Label>
+          <Label htmlFor="First Name">
+                First Name <span className="text-red-500">*</span>
+              </Label>
             <Input
               value={user.first_name}
               type="text"
@@ -192,6 +104,11 @@ export const UserForm = ({
               }
               disabled={isDisabled}
             />
+            {errors.first_name && (
+                <p className="text-red-500 text-sm" id="first_name">
+                  {errors.first_name}
+                </p>
+              )}
           </div>
       
 
@@ -214,7 +131,9 @@ export const UserForm = ({
 
       <div className="grid grid-cols-1 gap-6 xl:grid-cols-2">
         <div className="space-y-6">
-          <Label htmlFor="Email">Email</Label>
+        <Label htmlFor="Email">
+                Email <span className="text-red-500">*</span>
+              </Label>
           <Input
             value={user.email}
             type="text"
@@ -224,10 +143,15 @@ export const UserForm = ({
             }
             disabled={isDisabled}
           />
+          {errors.email && (
+                <p className="text-red-500 text-sm" id="email">
+                  {errors.email}
+                </p>
+              )}
         </div>
 
         <div className="space-y-6">
-          <Label htmlFor="Phone Number">Phone Number</Label>
+          <Label htmlFor="Phone Number"> Phone Number <span className="text-red-500">*</span></Label>
           <Input
             value={user.phone_number}
             type="text"
@@ -240,6 +164,11 @@ export const UserForm = ({
             }
             disabled={isDisabled}
           />
+           {errors.phone_number && (
+                <p className="text-red-500 text-sm" id="phone_number">
+                  {errors.phone_number}
+                </p>
+              )}
         </div>
 
         <div className="space-y-6">
@@ -339,18 +268,6 @@ export const UserForm = ({
               onChange={() => setIsActive(!isActive)}
               disabled={isDisabled}
             />
-            {/* <Switch
-              label="is_staff"
-              checked={isStaff}
-              onChange={() => setIsStaff(!isStaff)}
-              disabled={isDisabled}
-            />
-            <Switch
-              label="is_superuser"
-              checked={isSuperUser}
-              onChange={() => setIsSuperUser(!isSuperUser)}
-              disabled={isDisabled}
-            /> */}
           </div>
         </ComponentCard>
 
@@ -396,10 +313,7 @@ export const UserForm = ({
     { label: "Password", field: "password" },
     { label: "Name as per PAN Card", field: "name_as_per_pan_card" },
     { label: "Aadhar Card Number", field: "aadhar_card" },
-    // { label: "GST Number", field: "gst_number" },
-    // { label: "GST Portal Login", field: "gst_site_login" },
-    // { label: "GST Portal Password", field: "gst_site_password" },
-  ]
+]
     .filter(({ field }) => !(hideFields && field === "password"))
     .map(({ label, field }) => (
       <div className="space-y-6" key={field}>
