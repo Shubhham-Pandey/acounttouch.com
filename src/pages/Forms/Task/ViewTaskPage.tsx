@@ -14,6 +14,7 @@ export default function ViewTaskPage() {
       }
     })();
   }, [id]);
+console.log(category,'category');
 
   if (!category) {
     return <p className="text-gray-500 text-center mt-10">Loading...</p>;
@@ -21,7 +22,7 @@ export default function ViewTaskPage() {
 
   return (
     <div className="max-w-5xl mx-auto bg-white dark:bg-gray-900 rounded-lg p-8 shadow">
-      <h1 className="text-2xl font-semibold mb-6 text-center">Category Details</h1>
+      <h1 className="text-2xl font-semibold mb-6 text-center">Task Details</h1>
 
       <div className="overflow-x-auto">
         <table className="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
@@ -35,48 +36,27 @@ export default function ViewTaskPage() {
 
             {/* Name */}
             <tr>
-              <td className="px-6 py-4 font-semibold text-gray-700 dark:text-gray-300">Name</td>
-              <td className="px-6 py-4 text-gray-900 dark:text-white">{category.name || "-"}</td>
+              <td className="px-6 py-4 font-semibold text-gray-700 dark:text-gray-300">Title</td>
+              <td className="px-6 py-4 text-gray-900 dark:text-white">{category.title || "-"}</td>
             </tr>
 
             {/* Description */}
             <tr>
-              <td className="px-6 py-4 font-semibold text-gray-700 dark:text-gray-300">Description</td>
-              <td className="px-6 py-4 text-gray-800 dark:text-gray-300">{category.description || "-"}</td>
+              <td className="px-6 py-4 font-semibold text-gray-700 dark:text-gray-300">Status</td>
+              <td className="px-6 py-4 text-gray-800 dark:text-gray-300">{category.status || "-"}</td>
             </tr>
 
-            {/* Image */}
-            <tr>
-              <td className="px-6 py-4 font-semibold text-gray-700 dark:text-gray-300">Image</td>
-              <td className="px-6 py-4">
-                {category.image ? (
-                  <img
-                    src={category.image}
-                    alt={category.name}
-                    className="w-48 h-48 object-cover rounded border"
-                  />
-                ) : (
-                  <span className="text-gray-500">No image</span>
-                )}
-              </td>
-            </tr>
 
             {/* Created By ID */}
             <tr>
-              <td className="px-6 py-4 font-semibold text-gray-700 dark:text-gray-300">Created By ID</td>
-              <td className="px-6 py-4 text-gray-900 dark:text-white">{category.created_by?.id || "-"}</td>
+              <td className="px-6 py-4 font-semibold text-gray-700 dark:text-gray-300">Priority</td>
+              <td className="px-6 py-4 text-gray-900 dark:text-white">{category.priority || "-"}</td>
             </tr>
 
             {/* Created By Full Name */}
             <tr>
-              <td className="px-6 py-4 font-semibold text-gray-700 dark:text-gray-300">Created By Full Name</td>
-              <td className="px-6 py-4 text-gray-900 dark:text-white">{category.created_by?.full_name || "-"}</td>
-            </tr>
-
-            {/* Created By Email */}
-            <tr>
-              <td className="px-6 py-4 font-semibold text-gray-700 dark:text-gray-300">Created By Email</td>
-              <td className="px-6 py-4 text-gray-900 dark:text-white">{category.created_by?.email || "-"}</td>
+              <td className="px-6 py-4 font-semibold text-gray-700 dark:text-gray-300">Client ID</td>
+              <td className="px-6 py-4 text-gray-900 dark:text-white">{category.client?.id || "-"}</td>
             </tr>
 
             {/* Created At */}

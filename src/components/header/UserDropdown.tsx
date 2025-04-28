@@ -2,6 +2,8 @@ import { useState } from "react";
 import { DropdownItem } from "../ui/dropdown/DropdownItem";
 import { Dropdown } from "../ui/dropdown/Dropdown";
 import { Link } from "react-router";
+import { useSelector } from "react-redux";
+import { RootState, UserProfile } from "../../redux/reduxTypes";
 
 export default function UserDropdown() {
   const [isOpen, setIsOpen] = useState(false);
@@ -13,6 +15,12 @@ export default function UserDropdown() {
   function closeDropdown() {
     setIsOpen(false);
   }
+
+  const userProfile = useSelector(
+    (state: RootState) => state.auth.user.profile
+  );
+  const localStorageProfile = localStorage.getItem("auth");
+  const parsedProfile = userProfile || JSON.parse(localStorageProfile || "{}");
   return (
     <div className="relative">
       <button
@@ -20,10 +28,22 @@ export default function UserDropdown() {
         className="flex items-center text-gray-700 dropdown-toggle dark:text-gray-400"
       >
         <span className="mr-3 overflow-hidden rounded-full h-11 w-11">
-          <img src="/images/user/owner.jpg" alt="User" />
+              {parsedProfile?.user?.profile_picture ? (
+                <img
+                  src={parsedProfile?.user?.profile_picture}
+                  alt="user"
+                  className="w-full h-full object-cover"
+                />
+              ) : (
+                <img
+                  src="/images/user/user-38.jpg"
+                  alt="default user"
+                  className="w-full h-full object-cover"
+                />
+              )}
         </span>
 
-        <span className="block mr-1 font-medium text-theme-sm">Ritesh</span>
+        <span className="block mr-1 font-medium text-theme-sm">{parsedProfile?.user?.first_name}</span>
         <svg
           className={`stroke-gray-500 dark:stroke-gray-400 transition-transform duration-200 ${
             isOpen ? "rotate-180" : ""
@@ -51,14 +71,14 @@ export default function UserDropdown() {
       >
         <div>
           <span className="block font-medium text-gray-700 text-theme-sm dark:text-gray-400">
-            Ritesh Malviya
+          {parsedProfile?.user?.first_name}
           </span>
           <span className="mt-0.5 block text-theme-xs text-gray-500 dark:text-gray-400">
-            randomuser@pimjo.com
+          {parsedProfile?.email}
           </span>
         </div>
 
-        <ul className="flex flex-col gap-1 pt-4 pb-3 border-b border-gray-200 dark:border-gray-800">
+        {/* <ul className="flex flex-col gap-1 pt-4 pb-3 border-b border-gray-200 dark:border-gray-800">
           <li>
             <DropdownItem
               onItemClick={closeDropdown}
@@ -134,7 +154,7 @@ export default function UserDropdown() {
               Support
             </DropdownItem>
           </li>
-        </ul>
+        </ul> */}
         <Link
           to="/signin"
           onClick={()=> localStorage.clear()}
